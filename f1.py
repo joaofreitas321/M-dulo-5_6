@@ -68,3 +68,12 @@ for gp in GrandePremios:
 for nome in set(pilotos_vencedores):
     vitorias = pilotos_vencedores.count(nome)
     print(f"{nome} - {vitorias}")
+
+#substituir um nome de um piloto
+nome_a_procurar = "Lando Norris"
+nome_a_substituir = "Quim Barreiros"
+
+#percorrer a lista
+for gp in GrandePremios:
+    if gp['Vencedor'] == nome_a_procurar:
+        gp['Vencedor'] == nome_a_substituir
