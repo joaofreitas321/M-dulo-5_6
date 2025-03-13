@@ -68,10 +68,22 @@ def Menu(opcoes,titulo = ""):
     for i in range(len(opcoes)):
         print(f"{i+1}.{opcoes[i]}")
     #ler a opção do utlizador
-    op = ler_numero_inteiro_limites(1,len(opcoes),"A opção não é válida.")
+    op = ler_numero_inteiro_limites(1,len(opcoes),"Opção:")
     #se for válida devolvemos a opção escolhida
     return op
 
 def Media(valores):
     """Devolve a média dos valores de um tuple ou list"""
     return sum(valores) / len(valores)
+
+#Alterado em 12-03-2025
+def ler_string(tamanho_minimo,mensagem = "Introduza um texto:"):
+    """
+    Função devolve uma string com um mínimo de letras. Remove os espaços em branco no início e no final. Mostra uma mensagem para a introdução do texto.
+    """
+    while True:
+        texto = input(mensagem)
+        texto = texto.strip()
+        if len(texto) >= tamanho_minimo:
+            return texto
+        print(f"O texto inserido não é válido. Tem de ter no mínimo {tamanho_minimo} de letras.")
