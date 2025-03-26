@@ -2,6 +2,7 @@
 Módulo de gestão dos livros
 """
 import utils, app
+import os
 
 #lista dos livros
 livros = []
@@ -18,6 +19,15 @@ exemplo_livros =[
         'editora' : 'editora c','ano' : 2003,'estado' : 'disponível',
         'leitor' : None, 'nr_emprestimos' : 0}
 ]
+#campos que não podem ser editados pelo utilizador
+lista_campos_privados = ["id","estado","leitor","nr_emprestimos"]
+
+def GetLivro(id):
+    #devolve o livro com base no id indicado
+    for livro in livros:
+        if livro['id'] == id:
+            return livro
+    return None
 
 def Configurar():
     """Insere dados de exemplo"""
@@ -27,6 +37,7 @@ def Configurar():
 def MenuLivros():
     """Submenu para gerir os livros"""
     op = 0
+    os.system("cls")
     while op != 6:
         op = utils.Menu(["Adicionar","Listar","Editar","Apagar","Pesquisar","Voltar"],"Menu de livros")
         if op == 6:
@@ -36,11 +47,11 @@ def MenuLivros():
         if op == 2:
             Listar(livros)
         if op == 3:
-            pass
+            Editar()
         if op == 4:
-            pass
+            Apagar()
         if op == 5:
-            pass
+            Pesquisar_listar()
 
 #Adicionar Livro
 def Adicionar():
@@ -84,8 +95,68 @@ def Listar(lista_a_listar):
         print("-"*80)
 
 #Editar Livro
+def Editar():
+    #pesquisar o livro a editar
+    livros_editar = Pesquisar()
+    #mostrar os dados de cada livro encontrado
+    if len(livros_editar) == 0:
+        print("Não foram encontrados livros")
+        return
+    #mostrar os livros encontrados
+    Listar(livros_editar)
+    #permitir alterar os dados
+    id = utils.ler_numero_inteiro("Introduza o id do livro a editar ou 0 (zero) para cancelar:")
+    if id == 0:
+        return
+    #livro com o id indicado
+    livro = None
+    for l in livros_editar:
+        if l['id'] == id:
+            livro = l
+            break
+    if livro == None:
+        print("O id indicado não existe")
+        return
+    #escolher o campo a editar
+    lista_campos = list(livro.keys())
+    #remover os campos privados
+    for c in lista_campos_privados:
+        lista_campos.remove(c)
+    op = utils.Menu(lista_campos, "Qual o campo a editar?")
+    campo = lista_campos[op - 1]
+    #mostrar o valor atual do campo a editar
+    print(f"O campo {campo} tem o valor {livro[campo]}")
+    novo_valor = utils.ler_string(3,"Novo valor:")
+    #guardar o novo valor
+    livro[campo] = novo_valor
+    print("Edição conlcuída com sucesso.")
 
 #Apagar Livro
+def Apagar():
+    #verificar se a lista está vazia
+    if len(livros) == 0:
+        print("Não tem livros para remover.")
+        return
+    #pesquisar os livros com título semelhante
+    print("Pesquisar o livro a remover:")
+    l_livros = Pesquisar()
+    #verificar se encontrou pelo menos 1
+    if len(l_livros) == 0:
+        print("Não foi encontrado nenhum livro.")
+        return
+    #confirmar para cada um dos livros se deseja apagar
+    for livro in l_livros:
+        print(f"Título: {livro['título']} Autor: {livro['autor']} id: {livro['id']}")
+        op = input("Deseja remover este livro (s/n)?")
+        if op in "sS":
+            #TODO confirmar se o livro não está emprestado
+            livros.remove(livro)
+            break
+    print(f"Livro removido com sucesso. Tem {len(livros)} livros.")
+
+def Pesquisar_listar():
+    resultado = Pesquisar()
+    Listar(resultado)
 
 #Pesquisar Livros
 def Pesquisar():
@@ -93,14 +164,14 @@ def Pesquisar():
     #Deixar o utilizador escolher o campo de pesquisa
     op = utils.Menu(["Autor","Título"],"Escolha o campo de pesquisa:")
     #criar uma lista para os resultados
-    l_resultado = []
+    l_resultados = []
     if op == 1:
         campo = "autor"
     else:
-        campo = "título"
+        campo = "titulo"
     pesquisa = utils.ler_string(3,f"{campo} a pesquisar:")
     #adicionar à lista os livros que correspondem ao resultado da pesquisa
     for livro in livros:
         if pesquisa.lower() in livro[campo].lower():
-            l_resultado.append(livro)
-    Listar(l_resultado)
+            l_resultados.append(livro)
+    return l_resultados
